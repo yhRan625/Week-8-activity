@@ -1,17 +1,16 @@
 from typing import Union
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 app = FastAPI(docs_url="/api/docs", openapi_url="/api/openapi.json")
 
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to the FastAPI application"}
 
 @app.get("/api/healthchecker")
 def healthchecker():
     return {"status": "success", "message": "Integrate FastAPI Framework with Next.js"}
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,17 +20,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 class TodoCreate(BaseModel):
     title: str
+
 
 class TodoUpdate(BaseModel):
     title: Union[str, None] = None
     completed: Union[bool, None] = None
 
+
 class TodoItem(BaseModel):
     id: int
     title: str
     completed: bool
+
+
+# Define the TodoItem model
+class TodoItem(BaseModel):
+    id: int
+    title: str
+    completed: bool
+
 
 # In-memory storage for todo items
 todos = []
@@ -73,4 +83,4 @@ def delete_todo_item(todo_id: int):
         if todo_item.id == todo_id:
             del todos[i]
             return {"message": "Todo item deleted"}
-    return {"error": "Todo item not found"}
+    return {"error": "Todo item not found"
