@@ -1,16 +1,17 @@
 from typing import Union
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 app = FastAPI(docs_url="/api/docs", openapi_url="/api/openapi.json")
 
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the FastAPI application"}
 
 @app.get("/api/healthchecker")
 def healthchecker():
     return {"status": "success", "message": "Integrate FastAPI Framework with Next.js"}
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,35 +21,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 class TodoCreate(BaseModel):
     title: str
-
 
 class TodoUpdate(BaseModel):
     title: Union[str, None] = None
     completed: Union[bool, None] = None
 
-
 class TodoItem(BaseModel):
     id: int
     title: str
     completed: bool
-
-
-# Define the TodoItem model
-class TodoItem(BaseModel):
-    id: int
-    title: str
-    completed: bool
-
 
 # In-memory storage for todo items
 todos = []
 
 # Route to create a new todo item
-
-
 @app.post("/api/todos")
 def create_todo_item(todo: TodoCreate):
     new_todo = TodoItem(id=len(todos) + 1, title=todo.title, completed=False)
@@ -56,15 +44,11 @@ def create_todo_item(todo: TodoCreate):
     return new_todo
 
 # Route to get all todo items
-
-
 @app.get("/api/todos")
 def get_all_todo_items():
     return todos
 
 # Route to get a specific todo item by ID
-
-
 @app.get("/api/todos/{todo_id}")
 def get_todo_item(todo_id: int):
     for todo in todos:
@@ -73,8 +57,6 @@ def get_todo_item(todo_id: int):
     return {"error": "Todo item not found"}
 
 # Route to update a specific todo item by ID
-
-
 @app.patch("/api/todos/{todo_id}")
 def update_todo_item(todo_id: int, todo: TodoUpdate):
     for todo_item in todos:
@@ -85,8 +67,6 @@ def update_todo_item(todo_id: int, todo: TodoUpdate):
     return {"error": "Todo item not found"}
 
 # Route to delete a specific todo item by ID
-
-
 @app.delete("/api/todos/{todo_id}")
 def delete_todo_item(todo_id: int):
     for i, todo_item in enumerate(todos):
